@@ -1,0 +1,20 @@
+{
+  "name": "watcher-server",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "nodemon --exec ts-node index.ts",
+    "preview": "tsc && node dist/index.js",
+    "deploy": "git push heroku main",
+    "postinstall": "tsc",
+    "start": "node --trace-warnings dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "~14.14"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "redis": "^3.0.2",
+    "tslib": "~2.0.3"
+  }
+}
