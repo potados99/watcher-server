@@ -1,3 +1,3 @@
-export default function onError(error: any) {
+export default function handleError(error: any) {
     console.log(`Error: ${error}`);
 }

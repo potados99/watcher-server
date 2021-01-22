@@ -1,7 +1,9 @@
+import Property from "./Property";
+
 class WatcherNode {
-    id: number;
-    name: string;
-    props: Map<string, any>; // Property can be anything: like battery voltage, or usb connection.
+    public name: string;
+    public isOnline: boolean;
+    public props: [Property];
 }
 
 export default WatcherNode;

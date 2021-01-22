@@ -1,4 +1,4 @@
 import {Socket} from "socket.io";
 
-export default function onAppConnection(socket: Socket) {
+export default function handleAppConnection(socket: Socket) {
 }

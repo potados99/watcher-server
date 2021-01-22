@@ -1,14 +1,14 @@
 class WatcherNodeRepository {
-    getWatcherNode(nodeName: string) {
+    getWatcher(nodeName: string) {
 
     }
 
-    getAllWatcherNodes() {
+    getAllWatchers() {
 
     }
 
-    addWatcher(nodeName: string) {
-
+    updateWatcher(nodeName: string) {
+        // watcher.isOnline = true
     }
 
     removeWatcher(nodeName: string) {

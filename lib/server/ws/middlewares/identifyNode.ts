@@ -13,8 +13,9 @@ export default function identifyNode(socket: Socket, next: (err?: ExtendedError)
     if (!nodeName) {
         next(new Error('No node name!'));
     } else {
-        next();
         // @ts-ignore
         socket.nodeName = nodeName;
+
+        next();
     }
 }
