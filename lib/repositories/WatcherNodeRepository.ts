@@ -3,8 +3,6 @@ import Property from "../entities/Property";
 
 class WatcherNodeRepository {
     private watchers = Array<WatcherNode>();
-    private nodeChangeCallbacks = Array<((node: WatcherNode) => any)>();
-    private propChangeCallbacks = Array<((nodeName: string, prop: Property) => any)>();
 
     getNode(nodeName: string) {
         return this.watchers.find((w) => w.name === nodeName);
@@ -30,7 +28,7 @@ class WatcherNodeRepository {
 
         node.isOnline = isOnline;
 
-        this.notifyNodeChanged(node);
+        return node;
     }
 
     removeNode(nodeName: string) {
@@ -57,27 +55,7 @@ class WatcherNodeRepository {
         prop.value = propValue;
         prop.updated = Date.now();
 
-        this.notifyPropChanged(node.name, prop);
-    }
-
-    onNodeChanged(callback: (node: WatcherNode) => any) {
-        this.nodeChangeCallbacks.push(callback);
-    }
-
-    onPropChanged(callback: (nodeName: string, prop: Property) => any) {
-        this.propChangeCallbacks.push(callback);
-    }
-
-    private notifyNodeChanged(node: WatcherNode) {
-        this.nodeChangeCallbacks.forEach((cb) => {
-            cb(node);
-        });
-    }
-
-    private notifyPropChanged(nodeName: string, prop: Property) {
-        this.propChangeCallbacks.forEach((cb) => {
-            cb(nodeName, prop);
-        });
+        return prop;
     }
 }
 

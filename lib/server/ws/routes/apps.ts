@@ -1,11 +1,14 @@
 import {Socket} from "socket.io";
-import appConnectionRepository from "../../../repositories/AppConnectionRepository";
+import watcherService from "../../../services/WatcherService";
 
 export default function handleAppConnection(socket: Socket) {
+    watcherService.handleAppOnline(socket);
 
-    appConnectionRepository.addConnection(socket.id, socket);
+    socket.on('request:update', (nodeName: string | null) => {
+        watcherService.handleRequestForUpdate(nodeName);
+    });
 
     socket.on('disconnect', () => {
-        appConnectionRepository.removeConnection(socket.id);
+        watcherService.handleAppOffline(socket);
     });
 }
