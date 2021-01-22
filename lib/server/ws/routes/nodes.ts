@@ -9,10 +9,10 @@ export default function handleNodeConnection(socket: Socket) {
         throw new Error('nodeName not found. Check your middleware.');
     }
 
-    socket.join(nodeName);
-
     nodeConnectionRepository.addConnection(nodeName, socket);
-    watcherNodeRepository.updateWatcher(nodeName);
+    watcherNodeRepository.updateWatcher(nodeName, true);
+
+    socket.join(nodeName);
 
     socket.on('prop:update', (prop: any) => {
         console.log(`${prop.name}: ${prop.value}`);
@@ -24,5 +24,6 @@ export default function handleNodeConnection(socket: Socket) {
         console.log(`Node ${nodeName} detached.`);
 
         nodeConnectionRepository.removeConnection(nodeName);
+        watcherNodeRepository.updateWatcher(nodeName, false);
     });
 }

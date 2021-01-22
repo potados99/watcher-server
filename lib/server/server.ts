@@ -2,11 +2,12 @@ import express from 'express';
 import http from 'http';
 import {Server} from 'socket.io';
 import config from "../../config";
-import indexRouter from "./http/routes/root";
 import identifyNode from "./ws/middlewares/identifyNode";
 import handleNodeConnection from "./ws/routes/nodes";
 import handleAppConnection from "./ws/routes/apps";
 import handleError from "./ws/routes/error";
+import indexRouter from "./http/routes/index";
+import watchersRouter from "./http/routes/watchers";
 
 export default function startServer() {
     const app = express();
@@ -14,7 +15,8 @@ export default function startServer() {
     const io = new Server(httpServer, config.socket);
 
     // HTTP
-    app.get('/', indexRouter);
+    app.use('/', indexRouter);
+    app.use('/watchers', watchersRouter);
 
     // WS
     const nodes = io.of('/node');
