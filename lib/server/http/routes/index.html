@@ -31,26 +31,23 @@
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        if (input.value) {
-            socket.emit('chat message', input.value);
-            input.value = '';
-        }
+        socket.emit('request:update');
     });
 
-    socket.on('update:node', function(msg) {
+    socket.on('node:update', function(msg) {
         const {node} = msg;
 
         var item = document.createElement('li');
-        item.textContent = JSON.stringify(node);
+        item.textContent = `Node update: ${JSON.stringify(node)}`;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });
 
-    socket.on('update:node:prop', function(msg) {
+    socket.on('prop:update', function(msg) {
         const {nodeName, prop} = msg;
 
         var item = document.createElement('li');
-        item.textContent = `${nodeName}: ${JSON.stringify(prop)}`;
+        item.textContent = `Prop update for ${nodeName}: ${JSON.stringify(prop)}`;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });

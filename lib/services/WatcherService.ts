@@ -21,11 +21,11 @@ class WatcherService {
             throw new Error('nodeName not found. Check your middleware.');
         }
 
-        console.log(`Node ${nodeName} attached.`);
-
-        nodeConnectionRepository.addConnection(nodeName, socket);
         socket.join(nodeName);
 
+        console.log(`Node [${nodeName}] attached.`);
+
+        nodeConnectionRepository.addConnection(nodeName, socket);
         const node = watcherNodeRepository.updateNode(nodeName, true);
 
         WatcherService.notifyNodeUpdated(node);
@@ -34,31 +34,35 @@ class WatcherService {
     }
 
     handleNodeOffline(nodeName: string, socket: Socket) {
-        if (nodeConnectionRepository.getConnectionByName(nodeName) !== socket) {
-            // New connection is created and this connection is abandoned.
-            console.log(`Previous connection is abandoned.`);
+        const savedSocket = nodeConnectionRepository.getConnectionByName(nodeName);
+        const savedSocketIsAlive = savedSocket && !savedSocket.disconnected;
+
+        if (savedSocketIsAlive && savedSocket !== socket) {
+            // Saved socket is overridden by new connection before disconnect.
+            // In this case we have a live connection, so that we don't need to mark this node offline.
+            console.warn(`Previous connection is abandoned.`);
             return;
         }
 
-        console.log(`Node ${nodeName} detached.`);
+        console.log(`Node [${nodeName}] detached.`);
 
         nodeConnectionRepository.removeConnection(nodeName);
         watcherNodeRepository.updateNode(nodeName, false);
     }
 
     handlePropUpdate(nodeName: string, propName: string, propValue: any) {
-        console.log(`${propName}: ${propValue}`);
+        console.log(`[${nodeName}] ${propName}: ${propValue}`);
 
         const prop = watcherNodeRepository.updateProperty(nodeName, propName, propValue);
 
         WatcherService.notifyPropUpdated(nodeName, prop);
     }
 
-    handleRequestForUpdate(nodeName: string | null) {
-        if (nodeName === null) {
-            nodeConnectionRepository.emitAll('request:update');
-        } else {
+    handleRequestForUpdate(nodeName?: string) {
+        if (nodeName) {
             nodeConnectionRepository.getConnectionByName(nodeName)?.emit('request:update');
+        } else {
+            nodeConnectionRepository.emitAll('request:update');
         }
     }
 

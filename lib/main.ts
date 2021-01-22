@@ -6,8 +6,8 @@ import handleError from "./server/ws/routes/error";
 import identifyNode from "./server/ws/middlewares/identifyNode";
 import indexRouter from "./server/http/routes";
 import watchersRouter from "./server/http/routes/watchers";
-import handleNodeConnection from "./server/ws/routes/nodes";
 import handleAppConnection from "./server/ws/routes/apps";
+import handleNodeConnection from "./server/ws/routes/nodes";
 
 export default function startServer() {
     const app = express();
@@ -17,13 +17,9 @@ export default function startServer() {
     app.use('/', indexRouter);
     app.use('/watchers', watchersRouter);
 
-    const nodes = io.of('/node');
-    const apps = io.of('/app');
-
     io.on('error', handleError);
-    nodes.use(identifyNode);
-    nodes.on('connection', handleNodeConnection);
-    apps.on('connection', handleAppConnection)
+    io.of('/app').on('connection', handleAppConnection);
+    io.of('/node').on('connection', handleNodeConnection).use(identifyNode);
 
     httpServer.listen(8080, () => {
         console.log('Listening on 8080!');
