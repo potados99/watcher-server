@@ -29,6 +29,12 @@ abstract class ConnectionRepository {
 
         return undefined;
     }
+
+    emitAll(event: string, arg: any) {
+        this.getAllConnections().forEach((socket) => {
+           socket.emit(event, arg);
+        });
+    }
 }
 
 export default ConnectionRepository;

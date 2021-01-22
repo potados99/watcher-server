@@ -1,3 +1,4 @@
-import startServer from "./lib/server/server";
+import startServer from "./lib/main";
 
 startServer();
+

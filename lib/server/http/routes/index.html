@@ -23,7 +23,7 @@
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
-    var socket = io();
+    var socket = io('/app');
 
     var messages = document.getElementById('messages');
     var form = document.getElementById('form');
@@ -37,12 +37,24 @@
         }
     });
 
-    socket.on('chat message', function(msg) {
+    socket.on('update:node', function(msg) {
+        const {node} = msg;
+
         var item = document.createElement('li');
-        item.textContent = msg;
+        item.textContent = JSON.stringify(node);
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });
+
+    socket.on('update:node:prop', function(msg) {
+        const {nodeName, prop} = msg;
+
+        var item = document.createElement('li');
+        item.textContent = `${nodeName}: ${JSON.stringify(prop)}`;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+
 </script>
 </body>
 </html>

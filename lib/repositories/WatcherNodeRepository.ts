@@ -3,55 +3,81 @@ import Property from "../entities/Property";
 
 class WatcherNodeRepository {
     private watchers = Array<WatcherNode>();
+    private nodeChangeCallbacks = Array<((node: WatcherNode) => any)>();
+    private propChangeCallbacks = Array<((nodeName: string, prop: Property) => any)>();
 
-    getWatcher(nodeName: string) {
+    getNode(nodeName: string) {
         return this.watchers.find((w) => w.name === nodeName);
     }
 
-    getAllWatchers() {
+    getAllNodes() {
         return this.watchers;
     }
 
-    updateWatcher(nodeName: string, isOnline: boolean) {
-        let watcher;
+    updateNode(nodeName: string, isOnline: boolean) {
+        let node;
 
-        const found = this.getWatcher(nodeName);
+        const found = this.getNode(nodeName);
         if (found) {
-            watcher = found;
+            node = found;
         } else {
-            watcher = new WatcherNode();
-            watcher.name = nodeName;
-            watcher.props = Array<Property>();
+            node = new WatcherNode();
+            node.name = nodeName;
+            node.props = Array<Property>();
 
-            this.watchers.push(watcher);
+            this.watchers.push(node);
         }
 
-        watcher.isOnline = isOnline;
+        node.isOnline = isOnline;
+
+        this.notifyNodeChanged(node);
     }
 
-    removeWatcher(nodeName: string) {
+    removeNode(nodeName: string) {
 
     }
 
     updateProperty(nodeName: string, propName: string, propValue: any) {
-        const watcher = this.getWatcher(nodeName);
-        if (!watcher) {
+        const node = this.getNode(nodeName);
+        if (!node) {
             return;
         }
 
-        let prop;
-        const found = watcher.props.find((p) => p.name === propName);
+        let prop: any;
+        const found = node.props.find((p) => p.name === propName);
         if (found) {
             prop = found;
         } else {
             prop = new Property();
             prop.name = propName;
 
-            watcher.props.push(prop);
+            node.props.push(prop);
         }
 
         prop.value = propValue;
         prop.updated = Date.now();
+
+        this.notifyPropChanged(node.name, prop);
+    }
+
+    onNodeChanged(callback: (node: WatcherNode) => any) {
+        this.nodeChangeCallbacks.push(callback);
+    }
+
+    onPropChanged(callback: (nodeName: string, prop: Property) => any) {
+        this.propChangeCallbacks.push(callback);
+    }
+
+    private notifyNodeChanged(node: WatcherNode) {
+        this.nodeChangeCallbacks.forEach((cb) => {
+            cb(node);
+        });
+    }
+
+    private notifyPropChanged(nodeName: string, prop: Property) {
+        this.propChangeCallbacks.forEach((cb) => {
+            cb(nodeName, prop);
+        });
     }
 }
 

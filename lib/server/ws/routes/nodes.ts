@@ -9,8 +9,10 @@ export default function handleNodeConnection(socket: Socket) {
         throw new Error('nodeName not found. Check your middleware.');
     }
 
+    console.log(`Node ${nodeName} attached.`);
+
     nodeConnectionRepository.addConnection(nodeName, socket);
-    watcherNodeRepository.updateWatcher(nodeName, true);
+    watcherNodeRepository.updateNode(nodeName, true);
 
     socket.join(nodeName);
 
@@ -21,9 +23,15 @@ export default function handleNodeConnection(socket: Socket) {
     });
 
     socket.on('disconnect', () => {
+        if (nodeConnectionRepository.getConnectionByName(nodeName) !== socket) {
+            // New connection is created and this connection is abandoned.
+            console.log(`Previous connection is abandoned.`);
+            return;
+        }
+
         console.log(`Node ${nodeName} detached.`);
 
         nodeConnectionRepository.removeConnection(nodeName);
-        watcherNodeRepository.updateWatcher(nodeName, false);
+        watcherNodeRepository.updateNode(nodeName, false);
     });
 }
